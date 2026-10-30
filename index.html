@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>동해 원투 낚시판</title>
+<style>
+/* 브라보 문서 공통 토큰 — 정본
+   출처: app\해외판매-견적표.html 의 :root (2026-08-15). 이름을 새로 짓지 말고 여기 것을 쓴다.
+   쓰는 법: 뼈대 파일은 이걸 <link>로 걸고, 실제 문서로 낼 때는 이 파일 내용을 <style>에 인라인한다. */
+
+:root{
+  /* 바탕·종이 */
+  --ground:#F7F5F9; --card:#FFFFFF; --card-2:#FCFAFD;
+  /* 글씨 (진함 → 흐림) */
+  --ink:#211926; --ink-2:#4A4150; --ink-3:#7D7286;
+  /* 선 */
+  --line:#E7E1E9; --line-2:#F1EEF3;
+  /* 강조 */
+  --accent:#4C8DDB; --accent-deep:#3B76BE; --accent-wash:#E9F1FB; --accent-ink:#35699F;
+  /* 의미색 — 좋음 / 주의 / 나쁨 */
+  --ok:#2FA294;   --ok-wash:#E6F5F2;   --ok-ink:#1F6E63;
+  --warn:#B27417; --warn-wash:#FDF3E0; --warn-ink:#8A5A0E;
+  --bad:#C0453F;  --bad-wash:#FBEAE8;  --bad-ink:#A8362F;
+  /* 선택 상태 */
+  --pick-fill:#3B76BE; --on-pick:#FFFFFF;
+  --shadow:0 3px 16px rgba(33,25,38,.06);
+  --radius:16px;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  /* 한글은 맑은 고딕을 첫째로 둔다 (사장님 2026-08-16 "이 글씨가 뭉개져 보여").
+     웹폰트 한글(Gothic A1·Noto Sans KR)은 윈도우 힌팅이 나빠 뭉개진다 — 굳이 불러오지 마라.
+     맑은 고딕은 400·700 두 벌뿐이라 본문에 font-weight:500 을 청하면 흐려진다. 400 을 써라. */
+  font-family:'Malgun Gothic','맑은 고딕','Apple SD Gothic Neo',Pretendard,system-ui,sans-serif;
+  font-size:15px; line-height:1.8; word-break:keep-all; overflow-wrap:break-word;
+}
+
+.wrap{max-width:900px; margin:0 auto; padding:28px 18px 80px; display:flex; flex-direction:column; gap:22px}
+
+h1{margin:0; font-size:clamp(25px,4.4vw,34px); font-weight:800; letter-spacing:-.02em; line-height:1.3; text-wrap:balance}
+h2{margin:0; font-size:19px; font-weight:750; letter-spacing:-.01em; line-height:1.45; text-wrap:balance}
+h3{margin:0; font-size:16px; font-weight:700; line-height:1.5}
+p{margin:0}
+
+/* 문서 머리 — 제목 + 날짜/출처 한 줄 */
+.head{display:flex; flex-direction:column; gap:8px}
+.head .meta{color:var(--ink-3); font-size:13px}
+
+/* 기본 상자 */
+.card{background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+  padding:22px 22px 24px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:16px}
+.card.quiet{box-shadow:none; background:var(--card-2)}
+
+/* 작은 라벨 — 카드 위 눈썹글씨 */
+.eyebrow{font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--ink-3); text-transform:uppercase}
+
+/* 알약 배지 */
+.pill{display:inline-flex; align-items:center; gap:5px; padding:3px 10px; border-radius:999px;
+  font-size:12.5px; font-weight:700; line-height:1.6; white-space:nowrap}
+.pill.ok{background:var(--ok-wash); color:var(--ok-ink)}
+.pill.warn{background:var(--warn-wash); color:var(--warn-ink)}
+.pill.bad{background:var(--bad-wash); color:var(--bad-ink)}
+.pill.info{background:var(--accent-wash); color:var(--accent-ink)}
+
+/* 표 — 숫자는 자릿수가 맞게 */
+.tablebox{overflow-x:auto; -webkit-overflow-scrolling:touch}
+table{border-collapse:collapse; width:100%; min-width:300px; font-size:14px}
+th,td{padding:10px 12px; border-bottom:1px solid var(--line-2); text-align:left; vertical-align:top}
+th{font-weight:700; color:var(--ink-2); background:var(--card-2); white-space:nowrap}
+td.num,th.num{text-align:right; font-variant-numeric:tabular-nums}
+tr.total td{border-top:2px solid var(--line); border-bottom:none; font-weight:800; background:var(--accent-wash)}
+
+/* 누르는 것 */
+.btn{appearance:none; border:1px solid var(--line); background:var(--card); color:var(--ink);
+  padding:9px 16px; border-radius:10px; font:inherit; font-weight:700; cursor:pointer}
+.btn:hover{background:var(--card-2)}
+.btn.primary{background:var(--pick-fill); color:var(--on-pick); border-color:var(--accent-deep)}
+.btn:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+/* 짚고 넘어가는 줄 */
+.note{border-left:3px solid var(--accent); background:var(--accent-wash); color:var(--accent-ink);
+  padding:12px 14px; border-radius:0 10px 10px 0; font-size:14px}
+.note.warn{border-color:var(--warn); background:var(--warn-wash); color:var(--warn-ink)}
+
+/* 접는 상자 — 근거·계산은 여기 넣는다 */
+details{border:1px solid var(--line); border-radius:12px; background:var(--card-2); padding:0 14px}
+details>summary{cursor:pointer; padding:12px 0; font-weight:700; font-size:14px; color:var(--ink-2)}
+details[open]>summary{border-bottom:1px solid var(--line-2); margin-bottom:12px}
+details>*:last-child{margin-bottom:14px}
+
+/* 폰 */
+@media (max-width:600px){
+  .wrap{padding:20px 14px 60px; gap:18px}
+  .card{padding:18px 16px 20px; border-radius:14px}
+  .btn{min-height:44px}
+}
+
+/* 인쇄 */
+@media print{
+  body{background:#fff; color:#000; font-size:11pt}
+  .card{box-shadow:none; border-color:#ccc; break-inside:avoid}
+  .btn,.no-print{display:none !important}
+  details{border:none} details[open]>summary{border:none}
+}
+
+:root{ --point:#F5B800; --point-wash:#FFF4CC; --hold:#9A9CA3; --tray:#EBEBEC; --ground:#F2F2F3; }
+body{ font-size:15px; line-height:1.65; background:var(--ground); }
+.num{ font-variant-numeric:tabular-nums; }
+.wrap{ max-width:560px; padding:14px 12px 60px; gap:12px; }
+.top{ display:flex; align-items:flex-end; gap:8px; justify-content:space-between; }
+.top h1{ font-size:22px; }
+.basis{ margin:8px 0 2px; font-size:14px; color:var(--ink-2); background:var(--card); border-radius:12px; padding:9px 12px; box-shadow:0 0 0 1px var(--line-2); }
+.basis b{ color:var(--ink); }
+.basis.old{ background:var(--warn-wash); color:var(--warn-ink); }
+.cautionbox{ background:var(--warn-wash); color:var(--warn-ink); border-radius:12px; padding:10px 14px; margin:10px 0; font-size:14px; }
+.cal .c{ position:relative; }
+.cal .c .cz{ position:absolute; top:3px; right:4px; width:7px; height:7px; border-radius:50%; background:var(--warn); }
+.top .meta{ font-size:12px; color:var(--ink-3); text-align:right; }
+.days{ display:flex; flex-wrap:wrap; gap:6px; }
+.days button{ border:0; border-radius:999px; padding:8px 13px; min-height:40px; font:inherit; font-size:13.5px; background:var(--card); color:var(--ink-2); box-shadow:0 0 0 1px var(--line); }
+.days button.on{ background:var(--ink); color:#fff; box-shadow:none; font-weight:700; }
+.tray{ background:var(--tray); border-radius:20px; padding:6px; display:flex; flex-direction:column; gap:6px; }
+.tile{ background:var(--card); border-radius:15px; padding:16px 16px 18px; box-shadow:0 0 0 1px rgba(17,18,22,.04); }
+.tile.hero{ background:var(--point); }
+.tile h2{ font-size:16px; margin:0 0 8px; }
+.kv{ display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:10px; }
+.kv div{ background:rgba(255,255,255,.6); border-radius:12px; padding:8px 10px; }
+.kv b{ display:block; font-size:18px; line-height:1.3; }
+.kv span{ font-size:12px; color:var(--ink-2); }
+.now{ font-size:26px; font-weight:800; line-height:1.25; }
+.sub{ font-size:13.5px; color:var(--ink-2); }
+.bar{ position:relative; height:44px; margin:14px 2px 22px; background:var(--card-2); border-radius:10px; box-shadow:0 0 0 1px var(--line); }
+.bar .win{ position:absolute; top:0; bottom:0; background:var(--ok-wash); border-radius:8px; }
+.bar .ex{ position:absolute; top:-2px; bottom:-2px; width:2px; background:var(--accent); }
+.bar .ex i{ position:absolute; top:46px; left:50%; transform:translateX(-50%); font-style:normal; font-size:11px; color:var(--accent-ink); white-space:nowrap; }
+.bar .nowline{ position:absolute; top:-6px; bottom:-6px; width:3px; background:var(--bad); border-radius:2px; }
+.bar .h{ position:absolute; bottom:2px; font-size:10px; color:var(--ink-3); transform:translateX(-50%); }
+.legend{ font-size:12px; color:var(--ink-3); display:flex; gap:12px; flex-wrap:wrap; }
+.legend i{ display:inline-block; width:10px; height:10px; border-radius:3px; margin-right:4px; vertical-align:-1px; }
+.wins{ display:flex; flex-direction:column; gap:6px; }
+.wins div{ display:flex; gap:10px; align-items:baseline; font-size:14px; }
+.wins b{ min-width:92px; font-variant-numeric:tabular-nums; }
+.spot{ border-top:1px solid var(--line-2); padding:12px 2px; }
+.spot:first-of-type{ border-top:0; }
+.spot summary{ list-style:none; cursor:pointer; display:flex; gap:10px; align-items:flex-start; }
+.spot summary::-webkit-details-marker{ display:none; }
+.spot .nm{ font-weight:700; font-size:15.5px; }
+.spot .why{ font-size:13px; color:var(--ink-2); }
+.spot .tg{ margin-left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+.spot .tgt{ font-size:12px; color:var(--ink-3); white-space:nowrap; }
+.pill.hold{ background:#EEEEF0; color:#5B5D63; }
+.recs{ margin-top:10px; display:flex; flex-direction:column; gap:8px; }
+.rec{ background:var(--card-2); border-radius:12px; padding:9px 11px; font-size:13.5px; box-shadow:0 0 0 1px var(--line-2); }
+.rec .r1{ display:flex; gap:8px; flex-wrap:wrap; align-items:baseline; }
+.rec .dt{ color:var(--ink-3); font-variant-numeric:tabular-nums; font-size:12.5px; }
+.rec .c{ font-weight:700; }
+.rec .n{ color:var(--ink-2); }
+.rec a{ color:var(--accent-ink); font-size:12.5px; }
+.maplink{ font-size:12.5px; color:var(--accent-ink); }
+ul.tight{ margin:0; padding-left:18px; } ul.tight li{ margin:3px 0; }
+details.more summary{ cursor:pointer; font-weight:700; font-size:14px; }
+.foot{ font-size:12px; color:var(--ink-3); text-align:center; }
+@media (min-width:900px){ .wrap{ max-width:760px; } }
+.dnav{ display:flex; align-items:center; gap:8px; background:var(--card); border-radius:16px; padding:6px; box-shadow:0 0 0 1px var(--line); }
+.dnav button{ width:48px; height:48px; border:0; border-radius:12px; background:var(--card-2); font-size:22px; color:var(--ink); box-shadow:0 0 0 1px var(--line); }
+.dnav button:disabled{ opacity:.3; }
+.dnav .dl{ flex:1; text-align:center; line-height:1.35; }
+.dnav .dl b{ font-size:17px; display:block; }
+.dnav .dl span{ font-size:12.5px; color:var(--ink-3); }
+.today{ border:0; background:none; color:var(--accent-ink); font:inherit; font-size:13px; padding:4px 0; align-self:center; }
+.today[hidden]{ display:none; }
+.dangerbox{ background:var(--bad); color:#fff; border-radius:14px; padding:14px 16px; margin:10px 0; }
+.dangerbox .big{ font-size:19px; font-weight:800; }
+.dangerbox .w{ font-size:13.5px; margin-top:4px; opacity:.95; }
+.dangersoon{ background:var(--bad-wash); color:var(--bad-ink); border-radius:12px; padding:10px 14px; margin:10px 0; font-size:14px; }
+.dangersoon b{ cursor:pointer; text-decoration:underline; }
+.bests{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.bestc{ background:var(--card-2); border-radius:12px; padding:11px 12px; box-shadow:0 0 0 1px var(--line-2); cursor:pointer; }
+.bestc .m{ font-size:12.5px; color:var(--ink-3); font-weight:700; }
+.bestc .d{ font-size:19px; font-weight:800; font-variant-numeric:tabular-nums; margin:2px 0; }
+.bestc .sc{ display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+.bestc .acc{ font-size:12.5px; color:var(--ink-2); margin-top:6px; }
+.bestc .acc b{ color:var(--ink); font-variant-numeric:tabular-nums; }
+.bestc .tier{ font-size:12px; color:var(--ink-3); margin-top:3px; }
+.bestc .alt{ font-size:12px; color:var(--ink-2); margin-top:6px; border-top:1px dashed var(--line); padding-top:6px; }
+.mtabs{ display:flex; gap:6px; margin:10px 0 8px; }
+.mtabs button{ flex:1; min-height:44px; border:0; border-radius:10px; background:var(--card-2); box-shadow:0 0 0 1px var(--line); font:inherit; font-weight:700; color:var(--ink-2); cursor:pointer; }
+.lurelink{ display:flex; align-items:center; min-height:48px; margin:6px 0; padding:0 14px; border-radius:12px; background:var(--card); box-shadow:0 0 0 1px var(--line); color:var(--accent-ink); font-weight:800; text-decoration:none; }
+.rooms{ margin:8px 0 2px; }
+.hide-room{ display:none !important; }
+.rooms button{ min-height:48px; font-size:16px; }
+.mtabs button.on{ background:var(--accent); color:var(--on-pick,#111); box-shadow:none; }
+.cal{ display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+.cal .wd{ text-align:center; font-size:12px; color:var(--ink-3); padding:2px 0; }
+.cal .c{ border-radius:8px; padding:4px 2px 5px; text-align:center; min-height:46px; cursor:pointer; background:var(--card-2); box-shadow:0 0 0 1px var(--line-2); }
+.cal .c .n{ font-size:12px; color:var(--ink-2); font-variant-numeric:tabular-nums; }
+.cal .c .mu{ font-size:10.5px; color:var(--ink-3); line-height:1.2; }
+.cal .c.g-최고 .mu,.cal .c.g-위험 .mu{ color:#fff; }
+.cal .c .s{ font-size:15px; font-weight:800; font-variant-numeric:tabular-nums; }
+.cal .c.g-최고{ background:var(--ok); } .cal .c.g-최고 .n,.cal .c.g-최고 .s{ color:#fff; }
+.cal .c.g-좋음{ background:var(--ok-wash); }
+.cal .c.g-보통{ background:var(--warn-wash); }
+.cal .c.g-나쁨{ background:var(--bad-wash); }
+.cal .c.g-위험{ background:var(--bad); } .cal .c.g-위험 .n,.cal .c.g-위험 .s{ color:#fff; }
+.cal .c.far{ opacity:.55; }
+.cal .c.sel{ outline:2px solid var(--ink); outline-offset:1px; }
+.cal .c.blank{ background:none; box-shadow:none; cursor:default; }
+.acct{ width:100%; border-collapse:collapse; font-size:13px; margin:8px 0; table-layout:fixed; min-width:0; }
+.acct td,.acct th{ overflow-wrap:anywhere; white-space:normal; }
+.acct tr>*:first-child{ width:36%; }
+.fishT tr>*:first-child{ width:20%; } .fishT tr>*:nth-child(2){ width:38%; }
+.fishT2 tr>*:first-child{ width:22%; }
+.fishT .pill{ white-space:normal; display:inline-block; line-height:1.3; }
+.acct th,.acct td{ border-top:1px solid var(--line-2); padding:6px 4px; text-align:left; vertical-align:top; }
+.acct td.num{ font-variant-numeric:tabular-nums; }
+.accwrap{ overflow-x:auto; }
+.acct th{ font-size:12.5px; }
+@media (max-width:380px){ .bests{ grid-template-columns:1fr; } }
+.spotchips{ display:flex; flex-wrap:wrap; gap:6px; }
+.spotchips button{ border:0; border-radius:999px; padding:7px 12px; min-height:38px; font:inherit; font-size:13px; background:var(--card); color:var(--ink-3); box-shadow:0 0 0 1px var(--line); }
+.spotchips button.on{ background:var(--accent-wash); color:var(--accent-ink); box-shadow:0 0 0 1px var(--accent); font-weight:700; }
+.mapimg{ width:100%; border-radius:12px; display:block; cursor:zoom-in; box-shadow:0 0 0 1px var(--line); }
+.svfig{ margin:0 0 10px; }
+.svfig figcaption{ font-size:12.5px; color:var(--ink-3); margin-top:4px; }
+.svfig figcaption a{ white-space:nowrap; }
+.mapcap{ font-size:12px; color:var(--ink-3); margin-top:6px; }
+.lb{ position:fixed; inset:0; background:rgba(0,0,0,.88); display:flex; align-items:center; justify-content:center; z-index:50; padding:10px; }
+.lb[hidden]{ display:none; }
+.lb img{ max-width:100%; max-height:100%; border-radius:8px; }
+.areas{ display:flex; flex-wrap:wrap; gap:6px; }
+.areas button{ border:0; border-radius:999px; padding:9px 14px; min-height:42px; font:inherit; font-size:14px; background:var(--card); color:var(--ink-2); box-shadow:0 0 0 1px var(--line); }
+.areas button.on{ background:var(--ink); color:#fff; box-shadow:none; font-weight:700; }
+.warnbox{ margin-top:10px; background:#fff; border-radius:12px; padding:9px 11px; font-size:13.5px; }
+.srcline{ margin-top:10px; font-size:12px; color:var(--ink-2); background:rgba(255,255,255,.55); border-radius:10px; padding:7px 10px; line-height:1.55; }
+.srcline a{ color:var(--accent-ink); font-weight:700; }
+table.wx{ min-width:560px; font-size:12.5px; } table.wx th, table.wx td{ padding:6px 6px; text-align:center; } table.wx th:first-child{ text-align:left; } td.hi{ color:var(--bad); font-weight:800; }
+.aifab{ position:fixed; right:14px; bottom:16px; z-index:40; display:flex; align-items:center; gap:6px; min-height:52px; padding:0 18px 0 14px; border:0; border-radius:999px; background:var(--accent); color:var(--on-pick,#111); font:inherit; font-weight:800; font-size:15px; box-shadow:0 6px 18px rgba(0,0,0,.2); }
+.aipanel{ position:fixed; left:0; right:0; bottom:0; z-index:45; max-width:560px; margin:0 auto; height:72vh; background:var(--card); border-radius:18px 18px 0 0; box-shadow:0 -8px 28px rgba(0,0,0,.2); display:flex; flex-direction:column; }
+.aihead{ display:flex; align-items:center; gap:6px; flex-wrap:wrap; padding:10px 12px; border-bottom:1px solid var(--line-2); }
+.aistate{ font-size:12px; color:var(--ink-3); order:9; flex-basis:100%; } .aihead b:first-child{ flex:1; } .aistate .on{ color:var(--ok-ink); } .aistate .off{ color:var(--bad-ink); }
+.aimini{ min-height:36px; padding:0 10px; border:0; border-radius:10px; background:var(--card-2); box-shadow:0 0 0 1px var(--line); font:inherit; font-size:13px; }
+.ailog{ flex:1; overflow-y:auto; padding:10px 12px; display:flex; flex-direction:column; gap:8px; }
+.aim{ max-width:86%; padding:9px 12px; border-radius:14px; font-size:15px; line-height:1.6; }
+.aim.me{ align-self:flex-end; background:var(--accent-wash); } .aim.ai{ align-self:flex-start; background:var(--card-2); box-shadow:0 0 0 1px var(--line-2); }
+.aim.err{ background:var(--bad-wash); color:var(--bad-ink); } .aim.wait{ color:var(--ink-3); }
+.aimeta{ font-size:11.5px; color:var(--ink-3); margin-top:4px; }
+.aiin{ display:flex; gap:8px; padding:10px 12px 14px; border-top:1px solid var(--line-2); }
+.aiin input{ flex:1; min-width:0; min-height:48px; border:0; border-radius:12px; padding:0 12px; background:var(--card-2); box-shadow:0 0 0 1px var(--line); font:inherit; font-size:16px; }
+.aimic{ width:52px; min-height:48px; border:0; border-radius:12px; background:var(--accent); color:var(--on-pick,#111); display:flex; align-items:center; justify-content:center; }
+.aimic.rec{ background:var(--bad); color:#fff; animation:aipulse 1s infinite; } @keyframes aipulse{ 50%{ opacity:.6; } }
+.aisend{ min-height:48px; padding:0 12px; border:0; border-radius:12px; background:var(--card-2); box-shadow:0 0 0 1px var(--line); font:inherit; font-weight:700; }
+.foot{ padding-bottom:80px; }
+.nb{ display:inline-block; }
+[data-tip]{ -webkit-touch-callout:none; -webkit-user-select:none; user-select:none; }
+.tipbox{ position:fixed; z-index:60; max-width:300px; background:#1E1F24; color:#fff; padding:11px 13px; border-radius:12px; font-size:13.5px; line-height:1.6; box-shadow:0 8px 24px rgba(0,0,0,.25); }
+.tipbox b{ color:#FFD54A; }
+.tipbox .g{ color:#9FE3C9; } .tipbox .m{ color:#FFD54A; } .tipbox .x{ color:#FF9A9A; }
+.tiphint{ font-size:12px; color:var(--ink-3); }
+.w2{ color:var(--bad); font-weight:800; font-style:normal; }
+.cal .c.wv2{ box-shadow:inset 0 0 0 3px var(--bad); }
+.tile[hidden]{ display:none; }
+table.fi{ min-width:0; font-size:13px; } table.fi th, table.fi td{ padding:6px 8px; text-align:center; } table.fi th:first-child{ text-align:left; }
+.why2{ margin-top:6px; font-size:13px; background:rgba(255,255,255,.6); border-radius:10px; padding:7px 10px; line-height:1.55; }
+.statusbox{ background:var(--warn-wash); color:var(--warn-ink); border-radius:12px; padding:10px 12px; font-size:13px; margin-bottom:4px; }
+.statusbox ul{ margin-top:6px; color:var(--ink-2); } .statusbox a{ color:var(--accent-ink); }
+.rec .src{ font-size:12px; color:var(--ink-3); margin-top:3px; line-height:1.55; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div><h1>동해 원투 낚시판</h1><div class="sub">사천진 · 동호해변 · 물치항 · 지경해변</div></div>
+    <div class="meta" id="built"></div>
+  </div>
+  <div class="basis" id="basis"></div>
+  <div class="areas" id="areas"></div>
+  <div class="mtabs rooms" id="rooms"></div>
+  <a class="lurelink only-루어" href="lure.html">루어 영상 정리 — 물고기별 루어·던지기·액션 →</a>
+  <div class="dnav"><button id="prev" aria-label="이전 날">‹</button><div class="dl" id="dlabel"></div><button id="next" aria-label="다음 날">›</button></div>
+  <button class="today" id="toToday" hidden>오늘로 돌아가기</button>
+  <div id="danger"></div>
+
+  <div class="tray">
+    <div class="tile hero" id="nowTile"></div>
+    <div class="tile" id="fishTile"></div>
+    <div class="tile" id="fiTile" hidden></div>
+    <div class="tile">
+      <h2>날씨 <span class="sub" style="font-weight:400">— 3시간 간격</span></h2>
+      <div class="tablebox"><table class="wx" id="wx"></table></div>
+    </div>
+    <div class="tile">
+      <h2>이날 노릴 시간</h2>
+      <div class="bar" id="bar"></div>
+      <div class="legend"><span><i style="background:var(--ok-wash)"></i>노릴 시간</span><span><i style="background:var(--accent)"></i>만조·간조</span><span><i style="background:var(--bad)"></i>지금</span></div>
+      <div class="wins" id="wins" style="margin-top:10px"></div>
+    </div>
+  </div>
+
+  <div class="tray">
+    <div class="tile">
+      <h2>추천 날짜 <span class="sub" style="font-weight:400">— 이 권역 · 앞으로 한 달 · 눌러서 그날로</span></h2>
+      <div class="tiphint">등급·날짜를 꾹 누르면 이유가 나와요</div>
+      <div id="best"></div>
+      <details class="more" id="calWrap" style="margin-top:12px">
+        <summary>더보기 — 한 달 달력</summary>
+        <div class="cal" id="cal"></div>
+        <div class="legend" id="calLegend"></div>
+      </details>
+      <details class="more" style="margin-top:10px">
+        <summary>정확도는 어떻게 쟀나</summary>
+        <div id="accbox"></div>
+      </details>
+    </div>
+  </div>
+
+  <div class="tray">
+    <div class="tile" id="mapTile">
+      <h2>포인트 지도 <span class="sub" style="font-weight:400">— 눌러서 크게</span></h2>
+      <img class="mapimg" src="img/%EC%A0%84%EC%B2%B4-%EB%B6%81.jpg" alt="북쪽: 하평해변·사천진해변·바위섬" loading="lazy">
+      <div class="mapcap">① 하평해변 · ② 사천진해변 · ③ 바위섬(추정)</div>
+      <img class="mapimg" style="margin-top:10px" src="img/%EC%A0%84%EC%B2%B4-%EB%82%A8.jpg" alt="남쪽: 사천항 입구·작은방파제·하구·사천해변" loading="lazy">
+      <div class="mapcap">④ 항 입구 쪽 · ⑤ 작은방파제 · ⑥ 사천천 하구 · ⑦ 사천해변 — 위성 사진: 네이버 지도(© NAVER · 국토지리정보원), 번호는 조과 글을 보고 제가 찍은 위치</div>
+    </div>
+    <div class="tile">
+      <h2>자리별 예상 <span class="sub" style="font-weight:400" id="spotsSub">— 눌러서 과거 조과 보기</span></h2>
+      <div id="spots"></div>
+    </div>
+  </div>
+
+  <div class="tray">
+    <div class="tile only-원투">
+      <h2>채비·미끼</h2>
+      <ul class="tight">
+        <li><b>개불</b> = 감성돔 · <b>냉동 오징어·꽁치</b> = 장어 · 지렁이는 복어가 금방 뜯음 → 먼저 달아 보고 버티면 개불로</li>
+        <li>봉돌 <b>30~35호</b>(파도 따라) · 대 4.5m 이상 · 멀리(80~100m)</li>
+        <li>바늘 <b>감성돔 7~8호 이상</b>, 개불에서 <b>바늘 끝이 나오게</b> · 목줄 6~8호(복어가 잘 끊음)</li>
+        <li>복어만 1~2시간이면 대 하나를 다른 자리로 · 미끼는 10~15분마다 확인</li>
+      </ul>
+    </div>
+    <div class="tile only-루어">
+      <h2>루어 — 우리 기록에서</h2>
+      <ul class="tight">
+        <li>무게 <b>30~40g</b> (동호·물치·사천항) · 물치 8/7 20~30g은 작은 고기만</li>
+        <li>시간 <b>05:30~09:00</b> 아침 6번 · 사천해변 10/11만 13~17시</li>
+        <li>삼치 = 잔잔한 날(밤 파도 0.2~0.9m) · 광어 = 서프루어, 파도 날에도(10/14 1.7m)</li>
+      </ul>
+    </div>
+    <div class="tile only-원투">
+      <h2>걸었다가 안 놓치려면</h2>
+      <ul class="tight">
+        <li>툭툭(예신)엔 참기 → 초릿대가 <b>꾹 박히거나 끌려갈 때</b></li>
+        <li>채기 전 <b>늘어진 줄부터 감아</b> 팽팽하게 → 크게 한 번, 약하면 한 번 더</li>
+        <li>감는 동안 <b>줄이 느슨해지지 않게</b> · 드랙은 세게 당기면 조금 풀릴 정도</li>
+        <li>발 앞에선 <b>파도가 밀어줄 때</b> 같이 끌어올리기 — 그냥 들어올리지 않기</li>
+      </ul>
+    </div>
+    <div class="tile">
+      <details class="more" open>
+        <summary>출처와 계산 방법</summary>
+        <div class="accwrap"><table class="acct" style="margin-top:8px"><tr><th>항목</th><th>어디서</th></tr>
+          <tr><td>물때·만조·간조</td><td>바다타임 (국립해양조사원 제공) — 사천진항 · 수산항 · 물치항 · 주문진</td></tr>
+          <tr><td>들물·날물</td><td>만조·간조 시각으로 계산</td></tr>
+          <tr><td>날씨·파도·바람·비</td><td>바다타임 3시간 예보</td></tr>
+          <tr><td>수온·공식 지수</td><td>국립해양조사원 바다낚시지수</td></tr>
+          <tr><td>조과</td><td>네이버 카페·블로그 원글 · 낚시점 글은 따로 표시</td></tr></table></div>
+      </details>
+    </div>
+  </div>
+  <div class="foot" id="foot"></div>
+  <div class="lb" id="lb" hidden><img id="lbimg" alt=""></div>
+</div>
+<script src="data.js?v=2026-10-30_1552"></script>
+<script>
+(function(){
+const F=window.FISH, SPOTS=F.spots;
+const AREAS=[...new Set(SPOTS.map(s=>s.area))];
+let area=localStorage.getItem('fishArea'); if(!AREAS.includes(area)) area=AREAS[0];
+const st=()=>String(SPOTS.find(s=>s.area===area).st), stn=()=>SPOTS.find(s=>s.area===area).stn;
+const TT=()=>F.tide[st()]||{};
+const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+const days=()=>Object.keys(TT()).sort();
+let sel=todayStr();
+const WD='일월화수목금토';
+const mins=s=>+s.slice(0,2)*60+ +s.slice(3);
+const fmt=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');};
+function addDay(d,n){const t=new Date(d+'T00:00:00');t.setDate(t.getDate()+n);return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');}
+function pts(d){const out=[];[[-1,addDay(d,-1)],[0,d],[1,addDay(d,1)]].forEach(([o,dd])=>{(TT()[dd]?.ex||[]).forEach(([k,t,h])=>out.push({m:o*1440+mins(t),k,h}));});return out.sort((a,b)=>a.m-b.m);}
+function phaseAt(d,m){const p=pts(d);for(let i=0;i<p.length-1;i++){const a=p[i],b=p[i+1];if(a.m<=m&&m<=b.m){if(Math.min(m-a.m,b.m-m)<=40)return((m-a.m<=b.m-m?a.k:b.k)==='만조'?'만조 무렵':'간조 무렵');const f=(m-a.m)/(b.m-a.m);return(f<1/3?'초':f<2/3?'중':'끝')+(a.k==='간조'?'들물':'날물');}}return '';}
+function phaseInfo(d,m){const p=pts(d);for(let i=0;i<p.length-1;i++){const a=p[i],b=p[i+1];if(a.m<=m&&m<=b.m)return{a,b,pct:Math.round((m-a.m)/(b.m-a.m)*100),label:phaseAt(d,m)};}return null;}
+const dayTag=m=>m<0?'(어제) ':m>=1440?'(내일) ':'';
+const WV=(v,k=1)=>isNaN(v)||v==null?'-':(v>=2?`<em class="w2">${v.toFixed(k)}m</em>`:v.toFixed(k)+'m');
+const RED2=t=>String(t).replace(/파도 (\d+(?:\.\d+)?)m/g,(m,v)=>+v>=2?`<em class="w2">${m}</em>`:m);
+function slot(d,i){const t=TT()[d];if(!t)return null;return{wave:parseFloat(t.wave?.[i]),wdir:t.wdir?.[i],wspd:parseFloat(t.wspd?.[i]),sky:t.sky?.[i],temp:t.temp?.[i],rain:parseFloat(t.rain?.[i])};}
+function nightWave(d){const v=[6,7,8].map(i=>slot(d,i)?.wave).concat([1].map(i=>slot(addDay(d,1),i)?.wave)).filter(x=>!isNaN(x));return v.length?Math.max(...v):NaN;}
+function dawnWave(d){const v=slot(addDay(d,1),2)?.wave;return isNaN(v)?NaN:v;}
+function season(mo){return [0.4,0.4,1,1,0,0.3,0.3,0.7,1,1,1,0.4][mo-1];}
+function rate(sp,d){
+  const mo=+d.slice(5,7), w=nightWave(d), s=season(mo); const W=isNaN(w)?null:w;
+  const tag=(r,fish,why)=>({r,fish,why});
+  if(W!==null&&W>=3) return tag('bad','—','파도 '+W.toFixed(1)+'m — 풍랑주의보 수준, 가지 마세요');
+  const wv=W===null?'파도 예보 없음':'밤 파도 최고 '+WV(W,2);
+  if(mo===5&&['big','beach','small','dongho'].includes(sp.role)) return tag('hold','장어·도다리','5월 감성돔 금어기(잡으면 놓아줌) · '+wv);
+  switch(sp.role){
+    case 'big': if(s>=0.7&&W!==null&&W>=0.5) return tag('ok','감성돔','파도 있음 + 감성돔 철 · '+wv);
+                if(s>=0.7&&W!==null&&W>=0.3) return tag('warn','감성돔','철은 맞음, 파도 조금 약함 · '+wv);
+                return tag('bad','복어·장어','잔잔하면 감성돔 기록 거의 없음 · '+wv);
+    case 'beach': if(s>=0.7&&W!==null&&W>=0.5) return tag('warn','감성돔(드묾)','파도는 맞지만 최근 일반 글은 복어·황어 위주 · '+wv);
+                  return tag('bad','복어·장어','잔잔하면 복어 자리라는 글이 많음 · '+wv);
+    case 'small': if(s>=0.7||[4,6].includes(mo)) return tag('ok','작은 감성돔·장어','작은 감성돔 마릿수 글이 여럿(일반 낚시인) · '+wv);
+                  return tag('warn','도다리·장어','겨울엔 도다리 · '+wv);
+    case 'harbor': if(W!==null&&W>=1.0) return tag('ok','감성돔·놀래미','파도 높은 날 대안 — 입구 쪽으로 · '+wv);
+                   return tag('warn','작은 감성돔·망둥어','내항은 망둥어, 입구 쪽이 감성돔 · '+wv);
+    case 'shallow': return tag('bad','루어: 광어·삼치','원투엔 얕음 — 동틀 무렵 루어용 · '+wv);
+    case 'rock': return tag('hold','놀래미','생활낚시 자리 · '+wv);
+    case 'dongho': if(s>=0.7&&W!==null&&W>=0.5) return tag('ok','감성돔·장어','원투: 정자 앞~편의점 앞, 장타 · '+wv);
+                   return tag('warn','장어 · 아침 루어 광어','10월 초 삼치 많았으나 10/14 뒤로 「안 뭄」 글 · '+wv);
+    case 'mulchi': return tag('warn','장어·복어','원투는 작은 장어·복어 글 위주 · '+wv);
+    default: return tag('hold','참고','낚시점이 올린 손님 소식 — 확인 불가');
+  }
+}
+function rateLure(sp,d){
+  // 루어 방: the area's 루어 day score + what this spot's lure records caught; no lure record = 참고
+  const L=F.records.filter(x=>x.spot===sp.k&&isLure(x)), x=SC()[d]?.['루어'];
+  if(!L.length) return {r:'hold',fish:'—',why:'루어 기록 없음'};
+  const fish=[...new Set(L.flatMap(z=>z.fish.split(/[·,]/).map(f=>f.trim())).filter(f=>f&&f!=='-'&&f!=='작은 고기'))].slice(0,3).join('·')||'—';
+  if(!x) return {r:'hold',fish,why:`루어 기록 ${L.length}건 · 예보 없음`};
+  const r=x.g==='최고'||x.g==='좋음'?'ok':x.g==='보통'?'warn':'bad';
+  return {r,fish,why:`${x.g==='위험'?'매우 위험':x.g+' '+x.s+'점'} · 새벽 파도 ${x.info&&x.info.w!=null?WV(x.info.w):'예보 전'} · 루어 기록 ${L.length}건`};
+}
+function short(n){return n.replace(/ \(.*\)$/,'').replace(/·.*/,'');}
+function areaSpots(){return SPOTS.filter(s=>s.area===area);}
+function dayVerdict(d){const rs=areaSpots().filter(sp=>sp.role!=='info').map(sp=>({sp,r:rate(sp,d)}));const nw=nightWave(d),dw=dawnWave(d);
+  const ok=rs.filter(x=>x.r.r==='ok').map(x=>short(x.sp.nm));
+  if(isNaN(nw))return{lbl:'예보 전',cls:'hold',best:[]};
+  if(nw>=1.5||(!isNaN(dw)&&dw>=2.0))return{lbl:'위험',cls:'bad',best:[]};
+  return ok.length?{lbl:'추천',cls:'ok',best:ok}:{lbl:'보통',cls:'warn',best:[]};}
+const FIC={'매우좋음':'ok','좋음':'ok','보통':'warn','나쁨':'bad','매우나쁨':'bad'};
+function fiRows(d){const sp=SPOTS.find(s=>s.area===area);return (F.fi?.[String(sp.fi)]||[]).filter(x=>x.date===d);}
+function fiGam(d){const r=fiRows(d).filter(x=>x.fishName==='감성돔');return r.map(x=>x.fishingIndex);}
+const ORDER={ok:0,warn:1,bad:2,hold:3}, LBL={ok:'좋음',warn:'보통',bad:'나쁨',hold:'참고'};
+// ---- recommended days (score from build.py/score.py) + month calendar + accuracy -------------
+const GP={'최고':'ok','좋음':'ok','보통':'warn','나쁨':'bad','위험':'bad'};
+const TIER={A:'파도·바람·수온·물때·철 다 봄',B:'수온 예보 전 — 파도·바람·물때·철',C:'날씨 예보 전 — 물때·철만 (날씨 보면 바뀜)'};
+const MFISH={'원투':'감성돔·장어 · 밤','루어':'광어·삼치 · 새벽'};
+let calM=localStorage.getItem('fishCalM')||'원투';   // = the room (원투 방 / 루어 방)
+const isLure=x=>/루어/.test(x.how);
+const SC=()=>F.score?.[area]||{};
+function accOf(tier,g){const bt=F.acc?.bt?.[tier==='C'?'C':'B'];if(!bt)return null;const k=g==='최고'?'최고':g==='좋음'?'좋음':'보통 이하';const b=bt.by[k];return b&&b.n?{pct:Math.round(100*b.caught/b.n),n:b.n,c:b.caught}:null;}
+function goDay(d){sel=d;render();window.scrollTo({top:0,behavior:'smooth'});}
+function renderDanger(){
+  // 사장님 10/18: red warning ONLY on 풍랑주의보-level days; other rough days = a yellow "조심" line
+  const S=SC(), x=S[sel], box=document.getElementById('danger');
+  const dd=new Date(sel+'T00:00:00'), dl=`${dd.getMonth()+1}/${dd.getDate()}(${WD[dd.getDay()]})`;
+  let h='';
+  const lv=x&&['원투','루어'].map(m=>x[m]).find(v=>v.lv==='매우위험');
+  if(lv) h+=`<div class="dangerbox"><div class="big">⛔ ${dl} 매우 위험 — 낚시 가지 마세요</div><div class="w">${lv.why} · 기상청 풍랑주의보 기준(바람 14m/s↑ 또는 파도 3m↑)</div></div>`;
+  else if(x){const w=[...new Set((x[calM].warn||[]).map(t=>(calM==='원투'?'밤 ':'새벽 ')+t))];
+    const facts=[...new Set(w.map(t=>t.split(' — ')[0]))], tips=[...new Set(w.map(t=>t.split(' — ')[1]).filter(Boolean))];
+    if(w.length) h+=`<div class="cautionbox"><b>${dl} 조심</b> — ${RED2(facts.join(' · '))}${tips.length?'<br>→ '+tips.join(' · '):''}</div>`;}
+  const soon=Object.keys(S).filter(d=>d>=todayStr()&&d!==sel&&(S[d]['원투'].lv||S[d]['루어'].lv)).slice(0,10);
+  if(soon.length) h+=`<div class="dangersoon">⛔ 앞으로 매우 위험한 날 (풍랑주의보 수준): ${soon.map(d=>{const z=new Date(d+'T00:00:00');return `<b data-d="${d}">${z.getMonth()+1}/${z.getDate()}(${WD[z.getDay()]})</b>`;}).join(' · ')}</div>`;
+  box.innerHTML=h;
+  box.querySelectorAll('b[data-d]').forEach(b=>b.onclick=()=>goDay(b.dataset.d));
+}
+function renderBest(){
+  const S=SC(), ds=Object.keys(S).filter(d=>d>=todayStr()).sort().slice(0,31);
+  const card=m=>{
+    const pick=arr=>arr.reduce((b,d)=>!b||S[d][m].s>S[b][m].s?d:b,null);
+    const d=pick(ds); if(!d) return `<div class="bestc"><div class="m">${m}</div><div class="d">-</div></div>`;
+    const x=S[d][m], dd=new Date(d+'T00:00:00'), a=accOf(x.tier,x.g);
+    const fc=ds.filter(z=>S[z][m].tier!=='C'), d2=x.tier==='C'?pick(fc):null;
+    const alt=d2?`<div class="alt">예보 있는 날 중 최고 — <b>${+d2.slice(5,7)}/${+d2.slice(8)} (${WD[new Date(d2+'T00:00:00').getDay()]})</b> ${S[d2][m].s}점</div>`:'';
+    return `<div class="bestc" data-d="${d}"><div class="m">${m} · ${MFISH[m]}</div>
+      <div class="d">${dd.getMonth()+1}/${dd.getDate()} (${WD[dd.getDay()]})</div>
+      <div class="sc"><span class="pill ${GP[x.g]}" data-tip="${esc(scoreTip(d,m))}">${x.g}</span><b class="num">${x.s}점</b></div>
+      <div class="acc">정확도 <b>${a?a.pct+'%':'-'}</b>${a?` <span>(${x.g==='보통'||x.g==='나쁨'?'보통↓':x.g} 날 ${a.c}/${a.n} 잡음)</span>`:''}</div>
+      <div class="tier">${x.info?`${m==='원투'?'밤':'새벽'} 파도 ${x.info.w!=null?WV(x.info.w):'예보 전'} · 바람 ${x.info.ws!=null?x.info.ws.toFixed(0)+'m/s':'예보 전'} · ${x.info.sky||'날씨 예보 전'}`:''}</div>
+      ${x.warn&&x.warn.length?`<div class="tier" style="color:var(--warn-ink)">조심: ${RED2(x.warn.map(t=>t.split(' — ')[0]).join(' · '))}</div>`:''}
+      <div class="tier">${TIER[x.tier]}</div>${alt}</div>`;};
+  document.getElementById('best').innerHTML=`<div class="bests" style="grid-template-columns:1fr">${card(calM)}</div>`;
+  document.querySelectorAll('.bestc[data-d]').forEach(c=>c.onclick=e=>{if(e.target.closest('.alt'))return;goDay(c.dataset.d);});
+  // calendar
+  let h=[...WD].map(w=>`<div class="wd">${w}</div>`).join('');
+  if(ds.length){const f=new Date(ds[0]+'T00:00:00').getDay();h+='<div class="c blank"></div>'.repeat(f);}
+  h+=ds.map(d=>{const x=S[d][calM],n=+d.slice(8),mo=+d.slice(5,7);return `<div class="c g-${x.g}${x.tier==='C'?' far':''}${x.info&&x.info.w>=2?' wv2':''}${d===sel?' sel':''}" data-d="${d}" data-tip="${esc(scoreTip(d,calM)+'<br>'+TIER[x.tier])}">${x.warn&&x.warn.length?'<i class="cz"></i>':''}<div class="n">${n===1||d===ds[0]?mo+'/':''}${n}</div><div class="s">${x.g==='위험'?'매우<br>위험':x.s}</div><div class="mu">${(TT()[d]||{}).mul||''}</div></div>`;}).join('');
+  document.getElementById('cal').innerHTML=h;
+  document.querySelectorAll('#cal .c[data-d]').forEach(c=>c.onclick=()=>goDay(c.dataset.d));
+  document.getElementById('calLegend').innerHTML=['최고','좋음','보통','나쁨','위험'].map(g=>`<span><i class="g-${g}" style="background:var(--${g==='최고'?'ok':g==='좋음'?'ok-wash':g==='보통'?'warn-wash':g==='나쁨'?'bad-wash':'bad'})"></i>${g==='위험'?'매우 위험(풍랑주의보)':g}</span>`).join('')+'<span>칸 맨 아래 = 물때(○물)</span><span>흐린 칸 = 날씨 예보 전</span><span><i style="background:var(--warn);border-radius:50%"></i>노란 점 = 조심</span><span><i style="box-shadow:inset 0 0 0 3px var(--bad)"></i>빨간 테두리 = 파도 2m↑</span>';
+  renderAcc();
+  nbAll();
+}
+function renderAcc(){
+  const A=F.acc; if(!A){document.getElementById('accbox').innerHTML='';return;}
+  const B=A.bt.B,C=A.bt.C, row=(lbl,b)=>`<tr><td>${lbl}</td><td class="num"><b>${b.pct}%</b> (${b.n}번 중 ${b.hit}번)</td></tr>`;
+  const gr=(b)=>['최고','좋음','보통 이하'].map(k=>`<td class="num">${b.by[k].n?Math.round(100*b.by[k].caught/b.by[k].n)+'% ('+b.by[k].caught+'/'+b.by[k].n+')':'-'}</td>`).join('');
+  const L=A.lead, ln=Object.values(L).every(v=>!v.n)?`<tr><td>파도 예보 맞음</td><td class="num">쌓는 중 (${A.logDays}일치)</td></tr>`:Object.entries(L).map(([k,v])=>`<tr><td>파도 예보 맞음 (${k})</td><td class="num">${v.n?v.pct+'% ('+v.n+'번)':'쌓는 중 ('+A.logDays+'일치)'}</td></tr>`).join('');
+  document.getElementById('accbox').innerHTML=`
+   <div class="accwrap"><table class="acct"><tr><th>등급별 잡은 비율</th><th>최고</th><th>좋음</th><th>보통↓</th></tr>
+    <tr><td>10일 안</td>${gr(B)}</tr><tr><td>11일 뒤</td>${gr(C)}</tr></table></div>
+   <div class="accwrap"><table class="acct"><tr><th>지난 기록</th><th></th></tr>
+    <tr><td>시험한 날</td><td class="num">${B.n}번 (잡음 ${B.caught} · 꽝 ${B.skunk})</td></tr>
+    <tr><td>점수가 맞힘</td><td class="num">10일 안 ${B.pct}% · 11일 뒤 ${C.pct}%</td></tr>
+    <tr><td>매일 간다고 해도 맞음</td><td class="num">${B.base}%</td></tr>
+    <tr><td>꽝 미리 맞힘</td><td class="num">${B.skunkHit} / ${B.skunk}</td></tr>
+    <tr><td>수온</td><td>시험 못 함 (지난 자료 없음)</td></tr>
+    ${ln}</table></div>
+   <div class="accwrap"><table class="acct"><tr><th>점수 비중</th><th>원투</th><th>루어</th></tr>
+    <tr><td>파도</td><td class="num">25</td><td class="num">20</td></tr><tr><td>물 흐름</td><td class="num">20</td><td class="num">20</td></tr>
+    <tr><td>철</td><td class="num">15</td><td class="num">20</td></tr><tr><td>물때</td><td class="num">10</td><td class="num">15</td></tr>
+    <tr><td>바람</td><td class="num">10</td><td class="num">15</td></tr><tr><td>수온</td><td class="num">10</td><td class="num">10</td></tr>
+    <tr><td>날씨(비)</td><td class="num">10</td><td class="num">10</td></tr><tr><td>공식 지수</td><td class="num">-</td><td class="num">10</td></tr></table></div>
+   <div class="accwrap"><table class="acct"><tr><th>기준</th><th>최고 점수</th></tr>
+    <tr><td>원투 파도</td><td>1.0~2.0m (기록: 큰 감성돔 0.96~1.55m · 꽝 0.71m↓)</td></tr><tr><td>루어 파도</td><td>0.8m↓</td></tr>
+    <tr><td>바람</td><td>7m/s↓</td></tr><tr><td>물때</td><td>루어: 사리(6~9물) 가점 · 조금(12물~무시) 크게 감점 / 원투: 조금 약하게 감점 — 우리 기록: 삼치·광어는 조금에 거의 없고, 감성돔은 조금에도 잡힘</td></tr>
+    <tr><td>감성돔 수온</td><td>17~25도 · 국립수산과학원 <a href="${A.src['감성돔수온'].split(' ').pop()}" target="_blank" rel="noopener">원문</a></td></tr>
+    <tr><td>광어 수온</td><td>18~25도 · 국내 논문 <a href="${A.src['광어수온'].split(' ').pop()}" target="_blank" rel="noopener">원문</a></td></tr>
+    <tr><td>삼치 수온</td><td>16~22도 · FishBase <a href="${A.src['삼치수온'].split(' ').pop()}" target="_blank" rel="noopener">원문</a></td></tr>
+    <tr><td><b style="color:var(--bad-ink)">매우 위험</b></td><td>바람 14m/s↑ 또는 파도 3m↑ (기상청 풍랑주의보)</td></tr>
+    <tr><td>조심</td><td>파도 1.5m↑ · 바람 8m/s↑ · 비</td></tr>
+    <tr><td>예보 없는 날</td><td>보통 값으로 계산</td></tr></table></div>`;
+}
+// 사장님 10/18 「줄 애매하게 넘어가지 않게」: pieces joined by " · " / " — " wrap as whole pieces (inline-block),
+// never half a piece at the line end. Splits only outside tags; <br> stays a hard break.
+// 사장님 10/18 「뭐가 나쁘고 좋은지 그 메뉴 꾹 누르면 설명이 나오게」: long-press any [data-tip] -> bubble
+const esc=t=>String(t).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const GDEF={'최고':'80점 이상','좋음':'65~79점','보통':'50~64점','나쁨':'50점 아래','위험':'풍랑주의보 수준(바람 14m/s↑ 또는 파도 3m↑) — 가지 마세요'};
+const q=v=>v>=.9?'<span class="g">좋음</span>':v>=.6?'<span class="m">보통</span>':'<span class="x">나쁨</span>';
+function scoreTip(d,m){const x=SC()[d]?.[m];if(!x)return '';const dd=new Date(d+'T00:00:00');
+  let h=`<b>${dd.getMonth()+1}/${dd.getDate()} ${m} ${x.g==='위험'?'매우 위험':x.g+' '+x.s+'점'}</b><br>${x.g}=${GDEF[x.g]}`;
+  if(x.g==='위험') return h+'<br>'+x.why;
+  const P=x.parts||{},I=x.info||{},mul=(TT()[d]||{}).mul||'',W=m==='원투'?'밤':'새벽';
+  const L={'파도':`${W} 파도 ${I.w!=null?I.w.toFixed(1)+'m':'예보 전'}${m==='원투'?' (1.0~2.0m 최고)':' (0.8m↓ 최고)'}`,'물흐름':`물 흐름 ${mul}${/조금|무시|12물|13물/.test(mul)?' (조금 쪽)':''}`,
+    '철':`철 (${+d.slice(5,7)}월)`,'수온':`수온 ${SC()[d].wt!=null?SC()[d].wt+'도':'예보 전'}`,'바람':`바람 ${I.ws!=null?I.ws.toFixed(0)+'m/s':'예보 전'}`,
+    '날씨':`날씨 ${I.sky||'예보 전'}`,'물때':m==='원투'?'해질녘 만조':'새벽 물 움직임','공식지수':'바다 상태 공식 지수(잔잔할수록 좋음)'};
+  return h+'<br>'+Object.entries(P).map(([k,v])=>`${L[k]||k} — ${q(v)}`).join('<br>')+(x.warn&&x.warn.length?`<br><span class="m">조심: ${x.warn.map(t=>t.split(' — ')[0]).join(' · ')}</span>`:'');}
+let tipT=null,tipEl=null,tipDone=false,tipXY=null;
+function tipHide(){if(tipEl){tipEl.remove();tipEl=null;}}
+function tipShow(el){tipHide();const t=document.createElement('div');t.className='tipbox';t.innerHTML=el.dataset.tip;document.body.appendChild(t);
+  const r=el.getBoundingClientRect(),w=Math.min(300,innerWidth-20);t.style.maxWidth=w+'px';
+  const x=Math.max(10,Math.min(r.left+r.width/2-t.offsetWidth/2,innerWidth-t.offsetWidth-10));
+  const y=r.top-t.offsetHeight-8>8?r.top-t.offsetHeight-8:Math.min(r.bottom+8,innerHeight-t.offsetHeight-8);
+  t.style.left=x+'px';t.style.top=y+'px';tipEl=t;}
+document.addEventListener('pointerdown',e=>{const el=e.target.closest&&e.target.closest('[data-tip]');tipDone=false;
+  if(!el){tipHide();return;}tipXY=[e.clientX,e.clientY];clearTimeout(tipT);tipT=setTimeout(()=>{tipShow(el);tipDone=true;},450);});
+document.addEventListener('pointermove',e=>{if(tipXY&&Math.hypot(e.clientX-tipXY[0],e.clientY-tipXY[1])>10)clearTimeout(tipT);});
+['pointerup','pointercancel'].forEach(n=>document.addEventListener(n,()=>{clearTimeout(tipT);tipXY=null;}));
+document.addEventListener('click',e=>{if(tipDone){e.preventDefault();e.stopPropagation();tipDone=false;}},true);
+document.addEventListener('contextmenu',e=>{if(e.target.closest&&e.target.closest('[data-tip]'))e.preventDefault();});
+addEventListener('scroll',tipHide,{passive:true});
+function nbHTML(h){
+  return h.split(/<br\s*\/?>/i).map(seg=>{
+    const parts=[];let cur='',inTag=false;
+    for(let i=0;i<seg.length;i++){const ch=seg[i];
+      if(ch==='<')inTag=true; else if(ch==='>')inTag=false;
+      if(!inTag&&(seg.startsWith(' · ',i)||seg.startsWith(' — ',i))){parts.push(cur+' '+seg[i+1]);cur='';i+=2;continue;}
+      cur+=ch;}
+    parts.push(cur);
+    if(parts.length<2) return seg;
+    const tl=x=>x.replace(/<[^>]*>/g,'').length;
+    for(let k=0;k<parts.length-1;k++) if(tl(parts[k])<=5){parts[k+1]=parts[k]+' '+parts[k+1];parts.splice(k,1);k--;}  // short label ("출처 —") rides with the next piece
+    return parts.map(x=>tl(x)>22?x.replace(/ ([·—])$/,'&nbsp;$1'):`<span class="nb">${x}</span>`).join(' ');   // a piece longer than a line just flows
+  }).join('<br>');
+}
+const NB_SEL='.acct td,.sub,.why,.tier,.acc,.alt,.cautionbox,.srcline,.why2,.dangersoon,.dangerbox .w,#dlabel span,.basis,.mapcap,.rec .n,.rec .src,.foot,.statusbox,figcaption';
+function nbAll(){document.querySelectorAll(NB_SEL).forEach(e=>{if(e.dataset.nb===e.innerHTML)return;const h=nbHTML(e.innerHTML);e.innerHTML=h;e.dataset.nb=h;});}
+function render(){
+  const T=TT(); if(!T[sel]) sel=days().find(d=>d>=todayStr())||days()[0];
+  const t=T[sel]; const dd=new Date(sel+'T00:00:00'); const isToday=sel===todayStr();
+  document.getElementById('built').innerHTML='';
+  {const b=new Date(F.built.replace(' ','T')+':00'),now=new Date(),bd=new Date(b.getFullYear(),b.getMonth(),b.getDate()),nd=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+   const ago=Math.round((nd-bd)/864e5),h=b.getHours(),ap=h<12?'오전':'오후',hh=h%12||12,mm=String(b.getMinutes()).padStart(2,'0');
+   const el=document.getElementById('basis');el.className='basis'+(ago>=2?' old':'');
+   el.innerHTML=`<b>${b.getMonth()+1}월 ${b.getDate()}일 (${WD[b.getDay()]}) ${ap} ${hh}:${mm}</b> 예보 기준 · <b>${ago===0?'오늘 받음':ago+'일 지남'}</b>${ago>=2?' — 갱신이 멈췄을 수 있어요':''} <span class="sub">(매일 오후 3:52 새로 받음)</span>`;}
+  document.getElementById('areas').innerHTML=AREAS.map(a=>`<button class="${a===area?'on':''}" data-a="${a}">${a}</button>`).join('');
+  document.querySelectorAll('#areas button').forEach(b=>b.onclick=()=>{area=b.dataset.a;localStorage.setItem('fishArea',area);render();});
+  document.getElementById('rooms').innerHTML=['원투','루어'].map(m=>`<button class="${m===calM?'on':''}" data-m="${m}">${m==='원투'?'원투 · 밤':'루어 · 새벽'}</button>`).join('');
+  document.querySelectorAll('#rooms button').forEach(b=>b.onclick=()=>{calM=b.dataset.m;localStorage.setItem('fishCalM',calM);render();});
+  document.querySelectorAll('.only-원투').forEach(e=>e.classList.toggle('hide-room',calM!=='원투'));
+  document.querySelectorAll('.only-루어').forEach(e=>e.classList.toggle('hide-room',calM!=='루어'));
+  const nav=days().filter(d=>d>=todayStr()&&T[addDay(d,1)]);
+  const di=nav.indexOf(sel), dv=dayVerdict(sel);
+  document.getElementById('dlabel').innerHTML=`<b>${dd.getMonth()+1}월 ${dd.getDate()}일 (${WD[dd.getDay()]})${isToday?' · 오늘':''}</b><span>${area}${SC()[sel]?` · ${calM} ${SC()[sel][calM].g==='위험'?'매우 위험':SC()[sel][calM].g+' '+SC()[sel][calM].s+'점'}`:' · '+dv.lbl}</span>`;
+  const pv=document.getElementById('prev'), nx=document.getElementById('next');
+  pv.disabled=di<=0; nx.disabled=di<0||di>=nav.length-1;
+  pv.onclick=()=>{if(di>0){sel=nav[di-1];render();}}; nx.onclick=()=>{if(di<nav.length-1){sel=nav[di+1];render();}};
+  const tt=document.getElementById('toToday'); tt.hidden=isToday; tt.onclick=()=>{sel=todayStr();render();};
+  const now=new Date(), nm=now.getHours()*60+now.getMinutes();
+  const ex=(t?.ex||[]); const exTxt=ex.map(([k,tm])=>`${k} ${tm}`).join(' · ');
+  const si=isToday?Math.min(8,Math.round(nm/180)):6; const s=slot(sel,si)||{};
+  const ph=isToday?phaseAt(sel,nm):'';
+  const srcUrl=`https://www.badatime.com/${st()}/graph/${sel}`;
+  document.getElementById('nowTile').innerHTML=`
+    <div class="sub">${dd.getMonth()+1}월 ${dd.getDate()}일 ${WD[dd.getDay()]}요일 · 음력 ${t?.lunar||'-'}</div>
+    <div class="now">${t?.mul||'-'}${isToday&&ph?' · 지금 '+ph:''}</div>
+    ${(()=>{if(!isToday)return '';const pi=phaseInfo(sel,nm);if(!pi)return '';return `<div class="why2">왜 「${pi.label}」? — ${dayTag(pi.a.m)}${pi.a.k} ${fmt(pi.a.m)} → ${dayTag(pi.b.m)}${pi.b.k} ${fmt(pi.b.m)} 사이 <b>${pi.pct}%</b> 지점 (계산)</div>`;})()}
+    <div class="sub">${exTxt||'만조·간조 정보 없음'}</div>
+    <div class="kv">
+      <div><b class="num">${WV(s.wave,2)}</b><span>${isToday?'지금 파도':'저녁 6시 파도'}</span></div>
+      ${calM==='루어'?(()=>{const v=[1,2,3].map(i=>slot(sel,i)?.wave).filter(x=>!isNaN(x));return `<div><b class="num">${WV(v.length?Math.max(...v):NaN,2)}</b><span>새벽 파도 최고</span></div>`;})():`<div><b class="num">${WV(nightWave(sel),2)}</b><span>밤 파도 최고</span></div>`}
+      <div><b>${s.sky||'-'} ${s.temp?s.temp+'°':''}</b><span>${s.wdir||''} ${isNaN(s.wspd)?'':s.wspd+'m/s'}</span></div>
+    </div>
+    ${(()=>{const a=slot(sel,8)?.wave,b=slot(addDay(sel,1),1)?.wave,c=dawnWave(sel);if(!isNaN(c)&&c>=1.5)return `<div class="warnbox"><b style="color:var(--warn-ink)">조심 — 새벽 파도 높음</b> — 자정 ${WV(a,2)} → 3시 ${WV(b,2)} → 6시 ${WV(c,2)} · 물가에서 물러나기 · 구명조끼</div>`;return '';})()}
+    ${areaSpots().filter(x=>x.status).map(x=>`<div class="warnbox"><b style="color:var(--warn-ink)">🚧 ${x.nm}: ${x.status.title}</b> — 되는 곳: ${x.status.can} · 아래 자리 눌러 근거 보기</div>`).join('')}
+    <div class="srcline"><b>출처</b> 바다타임 「${stn()}」 (국립해양조사원 제공) · <a href="${srcUrl}" target="_blank" rel="noopener">원문 열기</a> · <a href="https://us-in.io/app/usin" target="_blank" rel="noopener">어신 앱</a> · <a href="https://us-in.io/fishing-result" target="_blank" rel="noopener">어신 조황센터</a> · 들물·날물 = 계산값</div>`;
+  // KHOA sea-fishing index
+  // 이날 잡힐까 — per species: was it ever caught in a wave like today's? (our records, build.py fish_stats). Plain words only.
+  (()=>{const el=document.getElementById('fishTile'),FS=F.acc?.fish;if(!FS){el.innerHTML='';return;}
+    const names=calM==='원투'?['감성돔','장어']:['삼치','광어'], WN=calM==='원투'?'밤':'새벽';
+    const idx=calM==='원투'?[[0,6],[0,7],[0,8],[1,1]]:[[0,1],[0,2],[0,3]];
+    const wv=idx.map(([o,i])=>slot(o?addDay(sel,1):sel,i)?.wave).filter(x=>!isNaN(x)), w=wv.length?Math.max(...wv):NaN;
+    const TR={'감성돔':[17,25],'광어':[18,25],'삼치':[16,22],'장어':null};
+    const r0=fiRows(sel)[0], wt=r0?parseFloat(String(r0.waterTemp).split('~')[0]):NaN;
+    const row=n=>{const f=FS[n];if(!f||!f.wN)return '';let cls,lbl,why;
+      if(isNaN(w)){cls='hold';lbl='예보 전';why='파도 예보가 아직 없어요';}
+      else if(w>f.wMax){cls='bad';lbl='잡힌 적 없음';why=`이렇게 거친 날 잡은 기록이 없어요 (잡힌 날은 ${(+f.wMax).toFixed(1)}m까지)`;}
+      else if(w<f.wMin){cls='bad';lbl='잡힌 적 없음';why=`이렇게 잔잔한 날 잡은 기록이 없어요 (잡힌 날은 ${(+f.wMin).toFixed(1)}m부터)`;}
+      else if(Math.abs(w-f.wMed)<=0.3){cls='ok';lbl='잘 잡히던 날';why=`잡힌 날들과 파도가 비슷해요 (보통 ${(+f.wMed).toFixed(1)}m)`;}
+      else {cls='ok';lbl='잡힌 적 있음';why=`이런 파도에서도 잡혔어요 (${(+f.wMin).toFixed(1)}~${(+f.wMax).toFixed(1)}m)`;}
+      const tr=TR[n];const tw=tr&&!isNaN(wt)?(wt>=tr[0]&&wt<=tr[1]?'':` · 수온 ${wt}도는 좋은 범위(${tr[0]}~${tr[1]}도) 밖`):'';
+      const tip=`<b>${n}</b><br>잡은 기록 ${f.wN}번 — 그날들 ${WN} 파도 ${f.wMin}~${f.wMax}m<br>잡힌 달: ${f.months.join('·')}월${f.times.length?'<br>잡힌 시각: '+f.times.join(' · '):''}${f.shop?`<br>${f.n}번 중 ${f.shop}번은 낚시점 글`:''}`;
+      return `<tr><th>${n}</th><td><span class="pill ${cls}" data-tip="${esc(tip)}">${lbl}</span><div class="sub" style="display:block;margin-top:4px">${why}${tw}</div></td></tr>`;};
+    el.innerHTML=`<h2>이날 잡힐까? <span class="sub" style="font-weight:400">— 우리 조과 기록으로 판단</span></h2>
+      <div class="tiphint">이날 ${WN} 파도 <b>${isNaN(w)?'예보 전':WV(w)}</b></div>
+      <div class="accwrap"><table class="acct fishT2">${names.map(row).join('')}</table></div>`;})();
+  // weather table
+  const H=['0시','3시','6시','9시','12시','15시','18시','21시','24시'];
+  const cell=(i,f)=>{const x=slot(sel,i);return x?f(x):'-';};
+  document.getElementById('wx').innerHTML=`<tr><th></th>${H.map(h=>`<th class="num">${h}</th>`).join('')}</tr>
+   <tr><th>날씨</th>${H.map((h,i)=>`<td>${cell(i,x=>x.sky||'-')}</td>`).join('')}</tr>
+   <tr><th>기온</th>${H.map((h,i)=>`<td class="num">${cell(i,x=>x.temp?x.temp+'°':'-')}</td>`).join('')}</tr>
+   <tr><th>비</th>${H.map((h,i)=>`<td class="num">${cell(i,x=>isNaN(x.rain)||x.rain===0?'':x.rain+'')}</td>`).join('')}</tr>
+   <tr><th>파도</th>${H.map((h,i)=>`<td class="num ${cell(i,x=>x.wave>=2?'hi':'')}">${cell(i,x=>isNaN(x.wave)?'-':x.wave.toFixed(1))}</td>`).join('')}</tr>
+   <tr><th>바람</th>${H.map((h,i)=>`<td class="num">${cell(i,x=>isNaN(x.wspd)?'-':x.wspd)}</td>`).join('')}</tr>`;
+  // windows
+  const P=pts(sel); const W=[{a:18*60,b:22*60,n:'해질녘'},{a:5*60,b:7*60,n:'동틀 무렵'}];
+  P.filter(p=>p.k==='만조').forEach(p=>{const m=p.m;if(m>=0&&m<1440+8*60){const x=((m%1440)+1440)%1440;if(x>=21*60||x<=7*60)W.push({a:m-60,b:m+60,n:'만조 앞뒤 1시간'});}});
+  W.push({a:1440+5*60,b:1440+7*60,n:'다음 날 동틀 무렵'});
+  const inDay=W.map(w=>({a:Math.max(0,w.a),b:Math.min(1440,w.b)})).filter(w=>w.b>w.a);
+  document.getElementById('bar').innerHTML=inDay.map(w=>`<div class="win" style="left:${w.a/14.4}%;width:${(w.b-w.a)/14.4}%"></div>`).join('')
+   +ex.map(([k,tm])=>`<div class="ex" style="left:${mins(tm)/14.4}%"><i>${k==='만조'?'▲':'▼'}${tm}</i></div>`).join('')
+   +[0,6,12,18,24].map(h=>`<div class="h" style="left:${h/24*100}%">${h}</div>`).join('')
+   +(isToday?`<div class="nowline" style="left:${nm/14.4}%"></div>`:'');
+  document.getElementById('wins').innerHTML=W.filter(w=>w.b>(isToday?nm:0)&&w.a<1440+8*60).filter((w,i,arr)=>!arr.some((o,j)=>j<i&&Math.abs(o.a-w.a)<=30&&o.b>=w.a)).sort((x,y)=>x.a-y.a).map(w=>`<div><b>${fmt(w.a)}~${fmt(w.b)}</b><span>${w.n} · ${phaseAt(sel,(w.a+w.b)/2)?phaseAt(sel,(w.a+w.b)/2)+'(계산)':''}${w.a>=1440?' (다음 날)':''}</span></div>`).join('');
+  // day list
+  renderDanger();
+  renderBest();
+  // spots
+  document.getElementById('mapTile').hidden=area!=='사천진';
+  const R=F.records;
+  const rows=areaSpots().map(sp=>({sp,r:calM==='원투'?rate(sp,sel):rateLure(sp,sel),recs:R.filter(x=>x.spot===sp.k&&isLure(x)===(calM==='루어')).sort((a,b)=>b.d.localeCompare(a.d))}));
+  rows.sort((a,b)=>ORDER[a.r.r]-ORDER[b.r.r]);
+  document.getElementById('spots').innerHTML=rows.map(({sp,r,recs})=>`
+   <details class="spot"><summary>
+     <div><div class="nm"><span class="dot d-${r.r==='ok'?'ok':r.r==='bad'?'bad':'hold'}"></span>${sp.pt?sp.pt+' ':''}${sp.nm}</div><div class="why">${r.why}</div></div>
+     <div class="tg"><span class="pill ${r.r==='hold'?'hold':r.r}" data-tip="${esc(`<b>${sp.nm} — ${LBL[r.r]}</b><br>${r.why}<br>${calM==='원투'?'좋음 = 파도·철로 본 이 자리 경향 (조과 글 기준)':'루어 = 이날 루어 점수 + 이 자리 루어 기록'}<br>참고 = 기록이 적어 판단 안 함`)}">${LBL[r.r]}</span>${r.fish!=='—'?`<span class="tgt">${r.fish}</span>`:''}</div>
+   </summary>
+   <div class="recs">
+     ${sp.svp?`<figure class="svfig"><img class="mapimg" src="img/${encodeURIComponent(sp.svp.img)}" alt="${sp.nm} 주변 거리뷰" loading="lazy"><figcaption>주변 모습 · 네이버 거리뷰 ${sp.svp.date.slice(0,7).replace('-','.')} 촬영 · <a class="maplink" href="${sp.svp.link}" target="_blank" rel="noopener">돌려 보기</a></figcaption></figure>`:''}
+     ${sp.img?`<img class="mapimg" src="img/${encodeURIComponent(sp.img)}" alt="${sp.nm} 위치" loading="lazy">`:''}
+     ${sp.status?`<div class="statusbox"><b>🚧 ${sp.status.title}</b> <span style="color:var(--ink-3)">(${sp.status.asof.slice(5).replace('-','/')} 기준)</span><br>지금 되는 곳: ${sp.status.can}<ul class="tight">${sp.status.lines.map(l=>`<li>${l[0].slice(2).replace(/-/g,'.')} ${l[1]} <a href="${l[2]}" target="_blank" rel="noopener">원글</a></li>`).join('')}</ul></div>`:''}
+     <div class="sub">${sp.where} · 물때 지점: ${sp.stn} · <a class="maplink" href="https://map.naver.com/p/search/${encodeURIComponent(sp.q)}" target="_blank" rel="noopener">네이버 지도</a> · 기록 ${recs.length}건</div>
+     ${recs.map(x=>`<div class="rec"><div class="r1"><span class="dt">${x.d.slice(2).replace(/-/g,'.')}${x.t?' '+x.t:''}</span><span class="c">${x.fish!=='-'&&!x.fish.split(/[·,]/).some(f=>x.catch.includes(f.trim()))?x.fish+' ':''}${x.catch}</span>${x.shop?'<span class="pill warn" style="font-size:11px">낚시점 글</span>':''}</div>
+       <div class="n">${x.how}${x.note?' — '+x.note:''}</div>
+       <div class="src">시각: ${x.tq?x.tq+(x.tk==='range'?' (범위)':''):'원글에 시각 없음'}<br>물때: ${x.mul||'-'}${x.phase?' · <b>'+x.phase+'</b> (계산 — 그날 '+x.stn+' '+x.exTxt+')':''} · <a href="https://www.badatime.com/${x.st}/graph/${x.d}" target="_blank" rel="noopener">바다타임 원문</a><br>${x.url?`조과: <a href="${x.url}" target="_blank" rel="noopener">원글 (${x.url.includes('cafe.')?'네이버 카페':'네이버 블로그'})</a>`:'조과: 원글 주소 없음'}</div></div>`).join('')}
+   </div></details>`).join('');
+  document.getElementById('foot').textContent='기록 '+R.length+'건 · 물때·날씨: 바다타임 · 조과: 네이버 카페·블로그 원글';
+  nbAll();
+}
+render();
+document.addEventListener('click',e=>{const t=e.target;if(t.classList&&t.classList.contains('mapimg')){document.getElementById('lbimg').src=t.src;document.getElementById('lb').hidden=false;}else if(t.closest&&t.closest('#lb')){document.getElementById('lb').hidden=true;}});
+let sx=null;document.querySelector('.dnav').addEventListener('touchstart',e=>{sx=e.touches[0].clientX;},{passive:true});
+document.querySelector('.dnav').addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)>40)(dx<0?document.getElementById('next'):document.getElementById('prev')).click();});
+let last=F.built;
+async function check(){try{const r=await fetch('data.js?t='+Date.now(),{cache:'no-store'});const s=await r.text();const j=JSON.parse(s.slice(s.indexOf('=')+1,s.lastIndexOf(';')));if(j.built!==last){if(typeof aiOpen!=='undefined'&&aiOpen){aiReloadLater=true;return;}location.replace(location.pathname+'?v='+encodeURIComponent(j.built)+location.hash);}}catch(e){}}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden){check();render();}});
+setInterval(()=>{if(!document.hidden)render();},60000);
+setInterval(()=>{if(!document.hidden)check();},30*60000);
+// ---- AI 낚시 도우미 (voice) — inserted into data/page.html by test/ai끼우기.py --------------------------------
+// 사장님 10-18 「말로 하는 AI」「말하다가 필요한 화면으로 이동」. Server: supabase/functions/fish-ai (PIN · on/off · $20 cap).
+// Speech in/out = the phone browser's own Web Speech API (free). Only the answer costs API money.
+const AI_URL='https://lxlfcwzzaetaijehrdwt.supabase.co/functions/v1/fish-ai';
+const AI_READY=false;   // true after the fish-ai function is deployed (사장님 Supabase 로그인 뒤)
+const aiHist=[]; let aiOpen=false, aiReloadLater=false, aiSpeak=localStorage.getItem('aiSpeak')!=='0';
+function aiCtx(){
+  // compact data the model reads: this area's 31 days, spots + their records, species analysis, lure index
+  const S=SC(), ds=Object.keys(S).sort();
+  const days=ds.map(d=>{const x=S[d],t=TT()[d]||{};const f=m=>x[m]?`${x[m].g}${x[m].g==='위험'?'':' '+x[m].s+'점'}${x[m].warn&&x[m].warn.length?' 조심('+x[m].warn.map(w=>w.split(' — ')[0]).join(',')+')':''}`:'-';
+    return `${d}(${WD[new Date(d+'T00:00:00').getDay()]}) ${t.mul||''} 원투:${f('원투')} 루어:${f('루어')} 밤파도:${x['원투']?.info?.w??'-'} 새벽파도:${x['루어']?.info?.w??'-'} 바람:${x['원투']?.info?.ws??'-'} 날씨:${x['원투']?.info?.sky??'-'} 수온:${x.wt??'-'} 만조간조:${(t.ex||[]).map(e=>e[0]+e[1]).join(' ')}`;}).join('\n');
+  const spots=areaSpots().map(sp=>{const rs=F.records.filter(r=>r.spot===sp.k).sort((a,b)=>b.d.localeCompare(a.d));
+    return `- ${sp.nm} (${sp.where}) 기록 ${rs.length}건: `+rs.slice(0,6).map(r=>`${r.d} ${r.how} ${r.fish} ${r.catch}${r.shop?'(낚시점 글)':''}`).join(' / ');}).join('\n');
+  const fish=Object.entries(F.acc?.fish||{}).map(([n,f])=>`${n}: 잡힌 날 파도 ${f.wMin}~${f.wMax}m(가운데 ${f.wMed}) 달 ${f.months.join('·')} 시각 ${f.times.join(',')}`).join('\n');
+  const bt=F.acc?.bt?.B; const acc=bt?`최고 날 잡은 비율 ${bt.by['최고'].caught}/${bt.by['최고'].n}, 좋음 ${bt.by['좋음'].caught}/${bt.by['좋음'].n}, 꽝 미리 맞힘 ${bt.skunkHit}/${bt.skunk}`:'';
+  return `오늘 ${todayStr()} · 지금 보는 날 ${sel} · 권역 ${area} (권역 목록: ${AREAS.join(', ')}) · 보는 방법 ${calM} · 예보 받은 시각 ${F.built}
+[날짜별 — 점수는 원투(밤)·루어(새벽) 따로, 11일 뒤는 날씨 예보 전]
+${days}
+[자리와 지난 조과]
+${spots}
+[어종별 잡힌 조건 — 우리 기록]
+${fish}
+[점수 정확도] ${acc}
+[루어 영상 페이지] 액션 사전, 삼치, 광어, 농어, 방어, 고등어, 우럭·놀래미, 무늬오징어 — 영상마다 준비물·던지기·액션 단계`;
+}
+function aiGo(g){
+  if(!g||!g.screen)return;
+  const tile=id=>{const e=document.getElementById(id);if(e)e.scrollIntoView({behavior:'smooth',block:'start'});};
+  if(g.area&&AREAS.includes(g.area)&&g.area!==area){area=g.area;localStorage.setItem('fishArea',area);}
+  if(g.method&&(g.method==='원투'||g.method==='루어')){calM=g.method;localStorage.setItem('fishCalM',calM);}
+  if(g.date&&SC()[g.date])sel=g.date;
+  if(g.screen==='today')sel=todayStr();
+  if(g.screen==='lure'){location.href='lure.html'+(g.fish?'#'+encodeURIComponent(g.fish):'');return;}
+  render();
+  const t={today:'nowTile',day:'nowTile',area:'nowTile',method:'nowTile',fish:'fishTile',weather:'wx',calendar:'calWrap',accuracy:'accbox'}[g.screen];
+  if(g.screen==='calendar'){const w=document.getElementById('calWrap');w.open=true;}
+  if(g.screen==='accuracy'){const w=document.getElementById('accbox').closest('details');if(w)w.open=true;}
+  if(g.screen==='spot'&&g.spot){const d=[...document.querySelectorAll('#spots details.spot')].find(x=>x.querySelector('.nm')?.textContent.includes(g.spot));if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'});}return;}
+  if(t)tile(t);
+}
+function aiSay(text){if(!aiSpeak||!('speechSynthesis' in window))return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang='ko-KR';u.rate=1.05;speechSynthesis.speak(u);}
+function aiMsg(who,text,meta){const box=document.getElementById('aiLog');const d=document.createElement('div');d.className='aim '+who;d.innerHTML=esc(text).replace(/\n/g,'<br>')+(meta?`<div class="aimeta">${esc(meta)}</div>`:'');box.appendChild(d);box.scrollTop=box.scrollHeight;}
+function aiStatus(s){const el=document.getElementById('aiState');if(!s||s.on===undefined){el.textContent='';return;}
+  const w=v=>`$${(v||0).toFixed(2)} (약 ${Math.round((v||0)*1400).toLocaleString()}원)`;
+  el.innerHTML=`<span class="nb">${s.on?'<b class="on">AI 켜짐</b>':'<b class="off">AI 꺼짐</b>'}</span> <span class="nb">이번 달 ${w(s.monthUsd)}</span> <span class="nb">한도 $${s.cap}까지 ${w(s.left)} 남음</span> <span class="nb">지금까지 총 ${w(s.total)}</span> <span class="nb">오늘 ${s.n}번</span> <span class="nb">(환율 1,400 추정 · 콘솔 잔액은 여기서 못 봐요)</span>`;
+  document.getElementById('aiOnOff').textContent=s.on?'끄기':'켜기';document.getElementById('aiOnOff').dataset.on=s.on?'1':'';}
+async function aiCall(payload){
+  let pin=localStorage.getItem('aiPin');
+  if(!pin){pin=prompt('AI 비밀번호 (처음 한 번만)');if(!pin)return null;localStorage.setItem('aiPin',pin);}
+  try{const r=await fetch(AI_URL,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({pin,...payload})});
+    const j=await r.json();if(r.status===401)localStorage.removeItem('aiPin');return j;}
+  catch(e){return {error:'AI 서버에 연결이 안 돼요 (아직 안 올렸거나 인터넷 문제)'};}
+}
+async function aiAsk(q){
+  q=(q||'').trim();if(!q)return;aiMsg('me',q);document.getElementById('aiQ').value='';
+  aiMsg('ai wait','생각하는 중…');
+  const j=await aiCall({q,history:aiHist.slice(-6),ctx:aiCtx()});
+  document.querySelector('#aiLog .wait')?.remove();
+  if(!j)return;
+  aiStatus(j);
+  if(j.error){aiMsg('ai err',j.error);return;}
+  aiMsg('ai',j.text,/opus/.test(j.model)?'오퍼스 5.5 (분석)':'하이쿠 5.5');
+  aiHist.push({role:'user',content:q},{role:'assistant',content:j.text});
+  aiSay(j.text); aiGo(j.go);
+}
+function aiListen(){
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R){aiMsg('ai err','이 브라우저는 받아쓰기가 안 돼요 — 글로 적어 주세요');return;}
+  const rec=new R();rec.lang='ko-KR';rec.interimResults=true;rec.maxAlternatives=1;
+  const btn=document.getElementById('aiMic');btn.classList.add('rec');speechSynthesis?.cancel();
+  let txt='';rec.onresult=e=>{txt=[...e.results].map(r=>r[0].transcript).join('');document.getElementById('aiQ').value=txt;};
+  rec.onerror=()=>btn.classList.remove('rec');
+  rec.onend=()=>{btn.classList.remove('rec');if(txt)aiAsk(txt);};
+  rec.start();
+}
+(function aiInit(){
+  if(!AI_READY&&!/[?&]ai=1/.test(location.search))return;   // hidden until the server is up (?ai=1 = preview)
+  const w=document.createElement('div');w.innerHTML=`
+  <button class="aifab" id="aiFab" aria-label="AI에게 묻기"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11z"/></svg><span>AI 묻기</span></button>
+  <div class="aipanel" id="aiPanel" hidden>
+    <div class="aihead"><b>AI 낚시 도우미</b><span id="aiState" class="aistate"></span><button id="aiOnOff" class="aimini">켜기</button><button id="aiSpk" class="aimini">${aiSpeak?'소리 끔':'소리 켬'}</button><button id="aiClose" class="aimini">닫기</button></div>
+    <div class="ailog" id="aiLog"><div class="aim ai">무엇이든 물어보세요. 예: 「이번 주 감성돔 언제 가?」 「내일 동호해변 루어 어때?」 「삼치 액션 보여줘」</div></div>
+    <div class="aiin"><button class="aimic" id="aiMic" aria-label="말하기"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11z"/></svg></button><input id="aiQ" placeholder="말하기 단추 또는 글로" enterkeyhint="send"><button id="aiSend" class="aisend">보내기</button></div>
+  </div>`;document.body.appendChild(w);
+  document.getElementById('aiFab').onclick=async()=>{aiOpen=true;document.getElementById('aiPanel').hidden=false;document.getElementById('aiFab').hidden=true;aiStatus(await aiCall({action:'status'}));};
+  document.getElementById('aiClose').onclick=()=>{aiOpen=false;speechSynthesis?.cancel();document.getElementById('aiPanel').hidden=true;document.getElementById('aiFab').hidden=false;if(aiReloadLater)check();};
+  document.getElementById('aiMic').onclick=aiListen;
+  document.getElementById('aiSend').onclick=()=>aiAsk(document.getElementById('aiQ').value);
+  document.getElementById('aiQ').addEventListener('keydown',e=>{if(e.key==='Enter')aiAsk(e.target.value);});
+  document.getElementById('aiSpk').onclick=e=>{aiSpeak=!aiSpeak;localStorage.setItem('aiSpeak',aiSpeak?'1':'0');e.target.textContent=aiSpeak?'소리 끔':'소리 켬';if(!aiSpeak)speechSynthesis?.cancel();};
+  document.getElementById('aiOnOff').onclick=async e=>{const on=!e.target.dataset.on;
+    if(on&&!confirm('AI를 켜면 질문마다 API 요금이 나가요(쉬운 질문 1~2원, 분석은 오퍼스 약 50~150원, 이번 달 최대 $20에서 자동으로 꺼짐). 켤까요?'))return;
+    aiStatus(await aiCall({action:on?'on':'off'}));};
+})();
+})();
+</script>
+</body>
+</html>
